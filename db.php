@@ -8,8 +8,9 @@ Author: Ozh
 
 class CustomYDB extends \YOURLS\Database\YDB {
   public function escape($string) {
-    // Dirty escape
-    return addslashes($string);
+    // Copied escape function from base YDB
+    // https://github.com/YOURLS/YOURLS/blob/23d21fd996e771c4015f5d8b4ec1b06af122d60b/includes/Database/YDB.php#L429
+    return substr($this->quote($string), 1, -1);
   }
 }
 
