@@ -1,10 +1,17 @@
 <?php
 /*
 SQLite driver for YOURLS.
-Version: 1.2
-This driver requires YOURLS 1.7.4 -- not before -- not after!
+Version: 1.3
+This driver requires YOURLS 1.9.2 - may work with later versions, too.
 Author: Ozh
 */
+
+class CustomYDB extends \YOURLS\Database\YDB {
+  public function escape($string) {
+    // Dirty escape
+    return addslashes($string);
+  }
+}
 
 yourls_db_sqlite_connect();
 
@@ -39,7 +46,7 @@ function yourls_db_sqlite_connect() {
      */
     $attributes     = yourls_apply_filter( 'db_connect_attributes',    array() ); // attributes as key-value pairs
 
-    $ydb = new \YOURLS\Database\YDB( $dsn, "", "", array(), $attributes );
+    $ydb = new CustomYDB( $dsn, "", "", array(), $attributes );
     $ydb->init();
 
     // Past this point, we're connected
@@ -141,7 +148,7 @@ function yourls_sqlite_last_24h_hits() {
 	FROM `yourls_log`
 	WHERE `shorturl` $keyword_range AND `click_time` > datetime('now', '-1 day')
 	GROUP BY `time`;";
-	$rows = $ydb->get_results( $query );
+	$rows = $ydb->fetchObjects( $query );
     
     $_last_24h = array();
 	foreach( (array)$rows as $row ) {
